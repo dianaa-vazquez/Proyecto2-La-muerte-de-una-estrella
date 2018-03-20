@@ -1,0 +1,200 @@
+import shiffman.box2d.*;
+
+/*
+como funciona?
+cuando los dos circulos choquen, da clic sobre ellos y eso hara aparecer una estrella,
+dejar pasar la estrella y dar un segundo clic aparecera una explocion de luces
+.
+*/
+
+  class Star{
+  float x,y, z;
+  float pz;
+  Star(){
+      
+    x = random(-width,width);
+    y = random(-height,height);
+    z = random(width);
+    pz = z;
+    }
+    
+  void actualizar(){
+    z = z - 10;
+    if(z<1){
+      z =width;
+      x = random(-width,width);
+      y = random(-height,height);
+      pz = z;
+      
+    }
+  }
+  
+    
+  void mostrar(){
+    fill(255);
+    noStroke();
+    float sx = map(x/z,0,1,0, width);
+    float sy = map(y/z,0,1,0, height);
+    
+    float r =map (z,0,width,16,0);
+    ellipse(sx,sy,r,r);
+    
+    
+   
+    float px =map(x/pz,0,1,0, width);
+    float py =map(y/pz,0,1,0, height);
+    
+    stroke(255);
+    line(px,py,sx,sy);
+    
+  }  
+  }
+  
+  
+  
+circle circle1;
+circle circle2;
+
+ Star[] stars = new Star[600];
+ 
+ 
+  boolean b = false;
+  boolean bandera = false;
+  
+  void setup( ){
+    size(500,500);
+     circle1 = new circle(0,250);
+     circle2 = new circle(500,250);
+     for(int i = 0; i<stars.length; i++){
+       stars[i] = new Star();
+     }
+    draw( );
+    generate();
+    
+  }
+
+
+  void draw( ){
+    background(0);
+    fill (255,0,0,160);
+    circle1.dibuja();
+    circle1.avanza();
+    
+    fill (0,0,255,160);
+    circle2.dibuja();
+    circle2.avanzaiz();
+   
+    
+    if (circle1.boundingBox(circle2)){
+      delay(300);
+    if(b){
+          
+          bigStar(); 
+          
+        
+          
+             }
+      else
+          generate();
+          
+       }        
+      if(bandera) generate();
+  }  
+ 
+  
+ void mousePressed(){
+  b =! b;
+ }
+ 
+ void mouseClicked(){
+ bandera =! bandera;
+ }
+ void generate(){
+   translate(width/2,height/2);
+            for(int i = 0; i<stars.length; i++){
+             
+               stars[i].actualizar();
+               stars[i].mostrar();
+          }
+ }
+  
+  class circle { 
+int x,y;
+float pi =3.1415;
+
+circle (int a, int b) {
+  x = a;
+  y = b;
+  
+  
+}
+
+void dibuja () {
+  int tamano = 50;
+  ellipse(x,y,tamano,tamano);
+  
+}
+
+void avanza () {
+  x = x +1;
+  
+}
+void avanzaiz(){
+  x = x-1;
+  
+}
+
+float radio(){
+ float radio = (50/(2*pi));
+ return radio;
+}
+void pos(){
+  
+}
+
+
+
+boolean boundingBox(circle other){
+ float sumaRadios = radio() + other.radio();
+ float dist = dist(x, y, other.x, other.y);
+ if( dist > sumaRadios)
+ return false;
+ else
+ return true;
+}
+
+}
+
+
+
+
+void bigStar(){
+  float x = 0.0, y = 0.0, r = 0.0, xa, ya;
+background(0);
+smooth();
+for (float theta = 0; theta<10*2*PI; theta = theta +2 *PI/5){
+ x = width/2 +2 *r*cos(2*theta);
+ y = height/2 - 2*r*sin(2*theta);
+ xa = width/2 + 2*r*cos(2*(theta+2*PI/5));
+ ya = height/2 -2*r*sin(2*(theta+2*PI/5));
+ r = (r+1.1)%(width/2.5);
+ line(x,y,xa,ya);
+ stroke((int)random(0,255),(int)random(0,25),0);
+ if(millis()%2 == 0){
+ strokeWeight(2);
+ redraw();
+ }
+ else if(millis()%3==0){
+ strokeWeight(3);
+ redraw();
+ }
+  else if(millis()%5==0){
+ strokeWeight(5);
+ redraw();
+ }
+  else if(millis()%7==0){
+ strokeWeight(7);
+ redraw();
+   }
+  }
+}
